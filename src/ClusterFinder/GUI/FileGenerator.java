@@ -371,6 +371,11 @@ public class FileGenerator extends javax.swing.JDialog {
             
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
             try (BufferedWriter bw = new BufferedWriter(fw)) {
+                
+                for (int i = 1; i < Integer.parseInt(dimension.getText()) + 1; i++)
+                    bw.write("  " + i + ".\t\t");
+                bw.write("\n\n");
+                
                 for (int i = 0; i < numSample; i++) {
                     for(int x = 0; x < numOfDimen; x++){
                         double randNum = (double) (rand.nextFloat()

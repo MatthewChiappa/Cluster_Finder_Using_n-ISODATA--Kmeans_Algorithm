@@ -11,15 +11,19 @@ import java.util.logging.Logger;
 
 public class KMeans {
     
-    private final int k;
-    private final int maxIt;
+    // global variables
+    public int k;
+    final int maxIt;
     private final File file;
-    private final int dim;
+    final int dim;
     
+    // cluster list, orignal cluster list, and
+    // iteration variable
     public ArrayList<Cluster> clusters;
     ArrayList<DataPoint> orig;
     public int iterations = 1;
     
+    // init
     public KMeans(int k, int maxIt, File file, int dim) {
         
         this.k = k;
@@ -30,12 +34,16 @@ public class KMeans {
         clusters = new ArrayList<>();
         orig = new ArrayList<>();
         
+        // k means algoritm is initilized
         initKMeans();
         initClusters();
         findMean();
         
+        // init allTrue to each if mean stays the same
         boolean allTrue = allEqual();
         
+        // k means algorithm is implemented until the max iterations
+        // is exceeded or the points in the cluster remain the same
         while(!allTrue && iterations <= maxIt) {
             for(int x = 0; x < k; x++)
                     clusters.get(x).clearData();
@@ -47,15 +55,25 @@ public class KMeans {
         
     }
     
+    // returns the cluster list
     public ArrayList<Cluster> getClusters() {
         return clusters;
     }
     
+    // starts the k means algoritm by putting all data points into one cluster
+    // by reading the text file then setting random datapoints to the mean of each
+    // cluster
     public final void initKMeans() {
         if(dim == 2) {
             try {
                 Scanner scan = new Scanner(file);
-                        
+                
+                while (scan.hasNextLine()) {
+                            if (scan.hasNextDouble())
+                                break;
+                            scan.nextLine();
+                        }
+                
                 while(scan.hasNext()){
                     DataPoint newPoint = new DataPoint(scan.nextDouble(), 
                             scan.nextDouble(), 0, new double[1]);   
@@ -72,6 +90,9 @@ public class KMeans {
             
             try {
                Scanner scan = new Scanner(file);
+               
+               scan.nextLine();
+               scan.nextLine();
                
                while(scan.hasNext()){
                     DataPoint newPoint = new DataPoint(scan.nextDouble(), 
@@ -121,6 +142,7 @@ public class KMeans {
         
     }
 
+    // seperates the clusters into k clusters by checking the distance of each point
     private void initClusters() {
  
         orig.stream().forEach((point) -> {
@@ -144,13 +166,15 @@ public class KMeans {
         
     }
 
-    private void findMean() {
+    // finds the mean of each cluster
+    public void findMean() {
         
         for(int i = 0; i < k; i++) 
             clusters.get(i).setNewCentroid();
         
     }
 
+    // checks if the means in the clusters remain the same
     public final boolean allEqual() {
         boolean[] allEqual = new boolean[k];
         
@@ -163,6 +187,10 @@ public class KMeans {
             if(!b) return false;
         
         return true; 
+    }
+    
+    public int getNumClusters(){
+        return k;
     }
     
 }

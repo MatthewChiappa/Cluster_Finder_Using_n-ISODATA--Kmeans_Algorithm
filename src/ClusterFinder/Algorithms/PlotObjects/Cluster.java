@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Cluster {
     
-    // center and data in the cluster
+    // center and data in the cluster, and number of dimensions
     public DataPoint point;
     public DataPoint furPt;
     private final int dim;
@@ -22,30 +22,37 @@ public class Cluster {
         return data;
     }
     
+    // adds a point to the cluster
     public void addDataPoint(DataPoint point) {
         data.add(point);
     }
     
+    // removes a point in the cluster
     public void removeDataPoint(DataPoint point) {
         data.remove(point);
     }
     
+    // returns the mean of the cluster
     public DataPoint getCentroid(){
         return point;
     }
     
+    // sets the mean of the cluster
     public void setCentroid(DataPoint point){
         this.point = point;
     }
     
+    // returns the furthest point in the cluster
     public DataPoint getFurthest() {
         return furPt;
     }
     
+    // sets the furthest point in the cluster
     public void setFurthest(DataPoint furPt) {
         this.furPt = furPt;
     }
     
+    // setd the new mean of the cluster
     public void setNewCentroid() {
         double x=0, y=0, z=0;
         double[] extraParams = new double[dim];
@@ -77,6 +84,7 @@ public class Cluster {
         point = newPoint;
     }
     
+    // checks if the previous mean is the same
     public boolean equalCentroid() {
         double x=0, y=0, z=0;
         double[] extraParams = new double[dim];
@@ -108,10 +116,12 @@ public class Cluster {
         return newPoint.equals(point);
     }
     
+    // clears the data points in the cluste
     public void clearData() {
         data = new ArrayList<>();
     }
     
+    // prints the cluster for debugging
     public void printCluster() {
         data.stream().forEach((newPoint) -> { 
             System.out.println(newPoint.printPoint());

@@ -47,7 +47,6 @@ public class GUI extends javax.swing.JFrame {
         k = new javax.swing.JLabel();
         l = new javax.swing.JLabel();
         iLabel = new javax.swing.JLabel();
-        no = new javax.swing.JLabel();
         min = new javax.swing.JLabel();
         help = new javax.swing.JButton();
         onText = new javax.swing.JTextField();
@@ -56,7 +55,6 @@ public class GUI extends javax.swing.JFrame {
         kText = new javax.swing.JTextField();
         lText = new javax.swing.JTextField();
         iText = new javax.swing.JTextField();
-        noText = new javax.swing.JTextField();
         minText = new javax.swing.JTextField();
         radioPanel = new javax.swing.JPanel();
         plot = new javax.swing.JRadioButton();
@@ -96,12 +94,12 @@ public class GUI extends javax.swing.JFrame {
 
         titlePanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         titlePanel.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 titlePanelAncestorAdded(evt);
             }
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
             }
         });
 
@@ -234,9 +232,6 @@ public class GUI extends javax.swing.JFrame {
         iLabel.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         iLabel.setText("I:");
 
-        no.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        no.setText("NO:");
-
         min.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         min.setText("MIN:");
 
@@ -287,10 +282,6 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        noText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        noText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        noText.setText("1");
-
         minText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         minText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         minText.setText("50");
@@ -303,73 +294,75 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(paramPanelLayout.createSequentialGroup()
-                        .addComponent(k)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(parameters)
-                    .addGroup(paramPanelLayout.createSequentialGroup()
-                        .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(on)
-                            .addComponent(oc)
-                            .addComponent(os)
-                            .addComponent(l)
-                            .addComponent(no)
-                            .addComponent(iLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
-                        .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ocText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(osText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(os)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                        .addComponent(osText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(paramPanelLayout.createSequentialGroup()
                         .addComponent(min)
                         .addGap(21, 21, 21)
                         .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(onText)
-                            .addComponent(lText)
-                            .addComponent(iText)
-                            .addComponent(noText)
                             .addComponent(minText, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(paramPanelLayout.createSequentialGroup()
                                 .addComponent(help)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(l)
+                        .addGap(36, 36, 36)
+                        .addComponent(lText))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(k)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(iLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(iText))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(oc)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ocText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(parameters)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(on)
+                        .addGap(25, 25, 25)
+                        .addComponent(onText)))
                 .addContainerGap())
         );
         paramPanelLayout.setVerticalGroup(
             paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(paramPanelLayout.createSequentialGroup()
                 .addComponent(parameters)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(20, 20, 20)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(on)
                     .addComponent(onText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(oc)
                     .addComponent(ocText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(osText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(os))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(k))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(k)
+                    .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(l))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(l)
+                    .addComponent(lText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(iText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(iLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(noText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(no))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(minText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(min))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(help)
                 .addContainerGap(12, Short.MAX_VALUE))
         );
@@ -877,8 +870,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextField lText;
     private javax.swing.JLabel min;
     private javax.swing.JTextField minText;
-    private javax.swing.JLabel no;
-    private javax.swing.JTextField noText;
     private javax.swing.JLabel oc;
     private javax.swing.JTextField ocText;
     private javax.swing.JLabel on;

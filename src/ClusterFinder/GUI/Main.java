@@ -1,5 +1,6 @@
 package ClusterFinder.GUI;
 
+import ClusterFinder.Algorithms.FuzzyIsodata;
 import ClusterFinder.Algorithms.FuzzyKMeans;
 import ClusterFinder.Algorithms.Isodata;
 import ClusterFinder.Algorithms.KMeans;
@@ -20,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -47,7 +49,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
-
 
 public class Main extends JFrame{
     
@@ -157,6 +158,7 @@ public class Main extends JFrame{
         JLabel outputLabel = new JLabel();
         JScrollPane jScrollPane1 = new JScrollPane();
         outputText = new JTextArea();
+        outputText.setText("Please input a file and select an algorithm.");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(750, 450));
@@ -174,16 +176,19 @@ public class Main extends JFrame{
         kMeans.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         kMeans.setText("K Means");
         kMeans.addActionListener((ActionEvent evt) -> {
-            if(dropDown.getSelectedIndex() == 1)
-                dropDown.setSelectedIndex(2);
+            if(dropDown.getSelectedIndex() == 2)
+                dropDown.setSelectedIndex(3);
             else
-                dropDown.setSelectedIndex(1);
+                dropDown.setSelectedIndex(2);
         });
 
         isodata.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         isodata.setText("ISODATA");
         isodata.addActionListener((ActionEvent evt) -> {
-            dropDown.setSelectedIndex(0);
+            if(dropDown.getSelectedIndex() == 0)
+                dropDown.setSelectedIndex(1);
+            else
+                dropDown.setSelectedIndex(0);
         });
 
         GroupLayout titlePanelLayout = new GroupLayout(titlePanel);
@@ -223,16 +228,17 @@ public class Main extends JFrame{
         algorithm.setText("Algorithm:");
 
         dropDown.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        dropDown.setModel(new DefaultComboBoxModel(new String[] { "ISODATA", "K Means", "Fuzzy K Means" }));
+        dropDown.setModel(new DefaultComboBoxModel(new String[] { "ISODATA", "Fuzzy ISODATA", "K Means",
+            "Fuzzy K Means" , "Fuzzy C Means"}));
         dropDown.setToolTipText("");
         dropDown.addActionListener((ActionEvent evt) -> {
-            if(dropDown.getSelectedIndex() == 0){
-                onText.setText("15");
-                ocText.setText("10");
-                osText.setText("7");
+            if(dropDown.getSelectedIndex() == 0 || dropDown.getSelectedIndex() == 1){
+                onText.setText("20");
+                ocText.setText("15");
+                osText.setText("10");
                 lText.setText("2");
                 noText.setText("1");
-                minText.setText("50");
+                minText.setText("100");
                 onText.setEnabled(true);
                 ocText.setEnabled(true);
                 osText.setEnabled(true);
@@ -240,7 +246,7 @@ public class Main extends JFrame{
                 noText.setEnabled(true);
                 minText.setEnabled(true);
             }
-            else if(dropDown.getSelectedIndex() == 1 || dropDown.getSelectedIndex() == 2){
+            else if(dropDown.getSelectedIndex() >= 1){
                 onText.setText("");
                 ocText.setText("");
                 osText.setText("");
@@ -324,29 +330,30 @@ public class Main extends JFrame{
         min.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         min.setText("MIN:");
 
+        HelpDialog helpD = new HelpDialog(this, true);
+        helpD.setLocationRelativeTo(null);
+        helpD.setResizable(false);
         help.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
         help.setText("Help");
         help.addActionListener((ActionEvent evt) -> {
-            String helpStr = "Help Information to be put here.";
-            JOptionPane.showMessageDialog(Main.this, helpStr,
-                    "Help", JOptionPane.INFORMATION_MESSAGE);
+            helpD.setVisible(true);
         });
 
         onText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         onText.setHorizontalAlignment(JTextField.CENTER);
-        onText.setText("15");
+        onText.setText("20");
 
         ocText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         ocText.setHorizontalAlignment(JTextField.CENTER);
-        ocText.setText("10");
+        ocText.setText("15");
 
         osText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         osText.setHorizontalAlignment(JTextField.CENTER);
-        osText.setText("7");
+        osText.setText("10");
 
         kText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         kText.setHorizontalAlignment(JTextField.CENTER);
-        kText.setText("4");
+        kText.setText("8");
 
         lText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         lText.setHorizontalAlignment(JTextField.CENTER);
@@ -362,83 +369,85 @@ public class Main extends JFrame{
 
         minText.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         minText.setHorizontalAlignment(JTextField.CENTER);
-        minText.setText("50");
+        minText.setText("100");
 
-        GroupLayout paramPanelLayout = new GroupLayout(paramPanel);
+        javax.swing.GroupLayout paramPanelLayout = new javax.swing.GroupLayout(paramPanel);
         paramPanel.setLayout(paramPanelLayout);
         paramPanelLayout.setHorizontalGroup(
-            paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(paramPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(paramPanelLayout.createSequentialGroup()
-                        .addComponent(k)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(kText, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE))
-                    .addComponent(parameters)
-                    .addGroup(paramPanelLayout.createSequentialGroup()
-                        .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(on)
-                            .addComponent(oc)
-                            .addComponent(os)
-                            .addComponent(l)
-                            .addComponent(no)
-                            .addComponent(iLabel, GroupLayout.PREFERRED_SIZE, 10, GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
-                        .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(ocText, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(osText, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(os)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                        .addComponent(osText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(paramPanelLayout.createSequentialGroup()
                         .addComponent(min)
                         .addGap(21, 21, 21)
-                        .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(onText)
-                            .addComponent(lText)
-                            .addComponent(iText)
-                            .addComponent(noText)
-                            .addComponent(minText, GroupLayout.Alignment.TRAILING)
+                        .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(minText, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(paramPanelLayout.createSequentialGroup()
                                 .addComponent(help)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(l)
+                        .addGap(36, 36, 36)
+                        .addComponent(lText))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(k)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(iLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(iText))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(oc)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ocText, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(parameters)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(paramPanelLayout.createSequentialGroup()
+                        .addComponent(on)
+                        .addGap(25, 25, 25)
+                        .addComponent(onText)))
                 .addContainerGap())
         );
         paramPanelLayout.setVerticalGroup(
-            paramPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(paramPanelLayout.createSequentialGroup()
                 .addComponent(parameters)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGap(20, 20, 20)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(on)
-                    .addComponent(onText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(onText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(oc)
-                    .addComponent(ocText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(osText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ocText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(osText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(os))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(kText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(k))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(l))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(iText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(k)
+                    .addComponent(kText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(l)
+                    .addComponent(lText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(iText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(iLabel))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(noText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(no))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(paramPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(minText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(paramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(minText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(min))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(help)
                 .addContainerGap(12, Short.MAX_VALUE))
         );
@@ -475,6 +484,7 @@ public class Main extends JFrame{
 
         radioPanel.setBorder(new LineBorder(new java.awt.Color(0, 0, 0), 1, true));
 
+        // radio buttons
         plot.setText("Plot");
         plot.addActionListener((ActionEvent evt) -> {
             pl = true;
@@ -556,6 +566,9 @@ public class Main extends JFrame{
                         y = new double[arrSize];
                         int i = 0;
                         
+                        scan.nextLine();
+                        scan.nextLine();
+                        
                         while(scan.hasNext()){
                             x[i] = scan.nextDouble();
                             y[i] = scan.nextDouble();
@@ -606,7 +619,7 @@ public class Main extends JFrame{
                             arrSize++;
                             scan.nextLine();
                         }
-                        
+                                                
                         sampleSize = arrSize;
                         
                         scan = new Scanner(file);
@@ -614,6 +627,12 @@ public class Main extends JFrame{
                         y = new double[arrSize];
                         z = new double[arrSize];
                         int i = 0;
+                        
+                        while (scan.hasNextLine()) {
+                            if (scan.hasNextDouble())
+                                break;
+                            scan.nextLine();
+                        }
                         
                         while(scan.hasNext()){
                             x[i] = scan.nextDouble();
@@ -663,6 +682,7 @@ public class Main extends JFrame{
                             , "Error", JOptionPane.ERROR_MESSAGE);
                    
             
+            outputText.setText("Graph Plotted. Press calculate to run the agorithm.");
             didPlot = true;
         });
 
@@ -690,7 +710,7 @@ public class Main extends JFrame{
                 
                 if(dropDown.getSelectedIndex() == 0) {
                     Isodata iso = new Isodata(Double.parseDouble(onText.getText()), 
-                            Double.parseDouble(ocText.getText()), Integer.parseInt(osText.getText()),
+                            Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
                                 Integer.parseInt(kText.getText()), Integer.parseInt(lText.getText()),
                                     Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()), 
                                         Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
@@ -698,12 +718,21 @@ public class Main extends JFrame{
                     clusters = iso.getClusters();
                 }
                 else if(dropDown.getSelectedIndex() == 1) {
+                    FuzzyIsodata iso = new FuzzyIsodata(Double.parseDouble(onText.getText()), 
+                            Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
+                                Integer.parseInt(kText.getText()), Integer.parseInt(lText.getText()),
+                                    Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()), 
+                                        Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
+                    
+                    clusters = iso.getClusters();
+                }
+                else if(dropDown.getSelectedIndex() == 2) {
                     KMeans kmeans = new KMeans(Integer.parseInt(kText.getText()), 
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = kmeans.getClusters(); 
                 }
-                else if(dropDown.getSelectedIndex() == 2) {
+                else if(dropDown.getSelectedIndex() >= 3) {
                     FuzzyKMeans fuzzyKmeans = new FuzzyKMeans(Integer.parseInt(kText.getText()), 
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
@@ -714,6 +743,14 @@ public class Main extends JFrame{
                 
                 for (Cluster newClust : clusters) {
                     ArrayList<DataPoint> data = newClust.getData();
+                    
+                    // fix
+                    /*Iterator<DataPoint> it = data.iterator();
+                    while(it.hasNext()){
+                        DataPoint pt = it.next();
+                        if(newClust.distanceFromCenter(pt) < Double.parseDouble(minText.getText()))
+                            it.remove();
+                    }*/
                     
                     float r = rand.nextFloat();
                     float g = rand.nextFloat();
@@ -777,9 +814,9 @@ public class Main extends JFrame{
                 }
                 
                 // add the means to the plot
-                double[] meanX = new double[Integer.parseInt(kText.getText())];
-                double[] meanY = new double[Integer.parseInt(kText.getText())];
-                double[] meanZ = new double[Integer.parseInt(kText.getText())];
+                double[] meanX = new double[clusters.size()];
+                double[] meanY = new double[clusters.size()];
+                double[] meanZ = new double[clusters.size()];
                 means = new ArrayList<>();
                 
                 for(int i = 0; i < clusters.size(); i++){
@@ -788,6 +825,7 @@ public class Main extends JFrame{
                     meanX[i] = mean.getX();
                     meanY[i] = mean.getY();
                     meanZ[i] = mean.getZ();
+                    
                 }
                 
                 if(threeD)
@@ -827,6 +865,8 @@ public class Main extends JFrame{
                         graphPanel.repaint();
                         break;
                     }
+            outputText.setText("Algorithm successfully ran." + 
+                    "Press save to take a snapshot of the graph and write the txt file");
                 }    
             else {
                 JOptionPane.showMessageDialog(Main.this, "You must plot the graph before calculation."
@@ -860,12 +900,38 @@ public class Main extends JFrame{
             scatter.setSelected(false);
             stem.setSelected(false);
             didPlot = false;
+            
+            outputText.setText("Please input a file and select an algorithm.");
         });
 
         copyright.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
         copyright.setText("Copyrights");
         copyright.addActionListener((ActionEvent evt) -> {
-            String copyStr = "Copyright Information to be put here.";
+            String copyStr = "JMathTools Copyright:\n\n" + "Copyright (c) 2003, Yann RICHET\n" +
+                                        "All rights reserved.\n" +
+                                        "\n" +
+        "Redistribution and use in source and binary forms, with or without modification, \n" +
+        "are permitted provided that the following conditions are met:\n" +
+                        "\n" +
+        "* Redistributions of source code must retain the above copyright notice, this list \n" +
+        "  of conditions and the following disclaimer.\n" +
+        "* Redistributions in binary form must reproduce the above copyright notice, this \n" +
+        "  list of conditions and the following disclaimer in the documentation and/or \n" +
+        "  other materials provided with the distribution.\n" +
+        "* Neither the name of JMATHTOOLS nor the names of its contributors may be used to \n" +
+        "  endorse or promote products derived from this software without specific prior \n" +
+        "  written permission.\n" +
+                        "\n" +
+        "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY \n" +
+        "EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES \n" +
+        "OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT \n" +
+        "SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, \n" +
+        "INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED \n" +
+        "TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR \n" +
+        "BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN \n" +
+        "CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN \n" +
+        "ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF \n" +
+                    "SUCH DAMAGE.";
             JOptionPane.showMessageDialog(Main.this, copyStr, 
                     "Copyrights", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -1050,6 +1116,8 @@ public class Main extends JFrame{
                         bw.write("Algorithm Used: K Means\n\n");    
                     else if(dropDown.getSelectedIndex() == 2)
                         bw.write("Algorithm Used: Fuzzy K Means\n\n");
+                    else if (dropDown.getSelectedIndex() == 3)
+                        bw.write("Algorithm Used: Fuzzy C Means\n\n");
                     
                     if(paramCheck.isSelected()) {
                         String name = outFile.getName();
@@ -1066,11 +1134,16 @@ public class Main extends JFrame{
                                         + "\nInput Dimension: " + dimText.getText() 
                                             + "\nInput Sample Size: (" + sampleSize 
                                             + ", " + dimText.getText() + ")\n\n");
-                        if(dropDown.getSelectedIndex() == 0){
-                            
+                        if(dropDown.getSelectedIndex() >= 0 || dropDown.getSelectedIndex() < 2){
+                            bw.write("ON: " + onText.getText() + "\n");
+                            bw.write("OC: " + ocText.getText() + "\n");
+                            bw.write("OS: " + osText.getText() + "\n");
+                            bw.write("K: " + kText.getText() + "\n");
+                            bw.write("L: " + lText.getText() + "\n");
+                            bw.write("I: " + iText.getText() + "\n");
+                            bw.write("MIN: " + minText.getText() + "\n\n");
                         }
-                        else if(dropDown.getSelectedIndex() == 1 
-                                || dropDown.getSelectedIndex() == 2){
+                        else if(dropDown.getSelectedIndex() >= 2){
                             bw.write("K: " + kText.getText() + "\n\n");
                         }
                     }
@@ -1164,7 +1237,8 @@ public class Main extends JFrame{
                             System.out.println(ex);
                         }
                     }
-                    
+                    outputText.setText("File successfully generated." + 
+                            "Press reset to plot a new set of points.");
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -1370,8 +1444,8 @@ public class Main extends JFrame{
         setTitle("n-ISODATA/KMeans Clustering");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(850, 545));
-        setMinimumSize(new Dimension(850, 545));
+        setPreferredSize(new Dimension(900, 565));
+        setMinimumSize(new Dimension(900, 565));
         setResizable(false);
         setVisible(true);
     }

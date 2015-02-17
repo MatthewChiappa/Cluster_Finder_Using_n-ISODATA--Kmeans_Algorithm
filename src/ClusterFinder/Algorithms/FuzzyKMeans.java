@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class FuzzyKMeans extends KMeans {
     
+    // class extends k means algorithm then clusters are minipulated
     public FuzzyKMeans(int k, int maxIt, File file, int dim) {
         
         super(k, maxIt, file, dim);
@@ -14,6 +15,8 @@ public class FuzzyKMeans extends KMeans {
         
     }
     
+    // the furthest point in each cluster is found and 
+    // set as the furthest
     public final void findFurthest() {
         clusters.stream().forEach((clust) -> {
             ArrayList<DataPoint> points = clust.getData();
@@ -26,6 +29,8 @@ public class FuzzyKMeans extends KMeans {
         });
     }
 
+    // the extra points within the threshold are added to each
+    // cluster
     private void addToClusters() {
 
         clusters.stream().forEach((clust) -> {
