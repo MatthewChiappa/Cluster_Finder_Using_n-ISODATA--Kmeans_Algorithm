@@ -63,7 +63,7 @@ public class KMeans {
     // starts the k means algoritm by putting all data points into one cluster
     // by reading the text file then setting random datapoints to the mean of each
     // cluster
-    public final void initKMeans() {
+    private void initKMeans() {
         if(dim == 2) {
             try {
                 Scanner scan = new Scanner(file);
@@ -143,7 +143,7 @@ public class KMeans {
     }
 
     // seperates the clusters into k clusters by checking the distance of each point
-    private void initClusters() {
+    public void initClusters() {
  
         orig.stream().forEach((point) -> {
             double min = Double.MAX_VALUE;

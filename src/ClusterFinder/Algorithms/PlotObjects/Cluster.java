@@ -155,5 +155,34 @@ public class Cluster {
         
         return Math.sqrt(xSqr + ySqr + zSqr + sum); 
     }
+
+    public double mDistanceFromCenter(DataPoint point2) {
+        int SIZE = point2.getExtraParams().length;
+        double[] newPt = new double[SIZE+3];
+        
+        newPt[0] = point2.getX() - point.getX();
+        newPt[1] = point2.getY() - point.getY();
+        newPt[2] = point2.getZ() - point.getZ();
+        
+        double[] extra = new double[SIZE];
+        double sum = 0;
+        
+        if(dim > 3) {
+            for(int i = 0; i < SIZE; i++) 
+                extra[i] = point2.getExtraParams()[i] - point.getExtraParams()[i];
+            
+            System.arraycopy(extra, 0, newPt, 3, newPt.length);
+        }
+      
+        double[] inverse = new double[newPt.length];
+        
+        
+        
+        return 0;
+    }
+
+    public double gaussDistanceFromCenter(DataPoint point) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

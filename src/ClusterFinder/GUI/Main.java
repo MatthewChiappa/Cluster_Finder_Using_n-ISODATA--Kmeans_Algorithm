@@ -21,7 +21,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -94,7 +93,6 @@ public class Main extends JFrame{
     }
     
     private void initComponents() {
-
         JPanel titlePanel = new JPanel();
         JLabel title = new JLabel();
         JLabel author = new JLabel();
