@@ -1,7 +1,9 @@
 package ClusterFinder.GUI;
 
 import ClusterFinder.Algorithms.FuzzyIsodata;
-import ClusterFinder.Algorithms.FuzzyKMeans;
+import ClusterFinder.Algorithms.FuzzyCMeans;
+import ClusterFinder.Algorithms.GathGeva;
+import ClusterFinder.Algorithms.GustafsonKessel;
 import ClusterFinder.Algorithms.Isodata;
 import ClusterFinder.Algorithms.KMeans;
 import ClusterFinder.Algorithms.PlotObjects.Cluster;
@@ -174,8 +176,11 @@ public class Main extends JFrame{
         kMeans.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         kMeans.setText("K Means");
         kMeans.addActionListener((ActionEvent evt) -> {
-            if(dropDown.getSelectedIndex() == 2)
-                dropDown.setSelectedIndex(3);
+            if(dropDown.getSelectedIndex() == 2){
+                Random rand = new Random();
+                int num = rand.nextInt(4)+2;
+                dropDown.setSelectedIndex(num);
+            }
             else
                 dropDown.setSelectedIndex(2);
         });
@@ -227,7 +232,7 @@ public class Main extends JFrame{
 
         dropDown.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         dropDown.setModel(new DefaultComboBoxModel(new String[] { "ISODATA", "Fuzzy ISODATA", "K Means",
-            "Fuzzy K Means" , "Fuzzy C Means"}));
+            "Fuzzy C Means", "Gustafson Kessel", "Gath-Geva"}));
         dropDown.setToolTipText("");
         dropDown.addActionListener((ActionEvent evt) -> {
             if(dropDown.getSelectedIndex() == 0 || dropDown.getSelectedIndex() == 1){
@@ -244,7 +249,7 @@ public class Main extends JFrame{
                 noText.setEnabled(true);
                 minText.setEnabled(true);
             }
-            else if(dropDown.getSelectedIndex() >= 1){
+            else if(dropDown.getSelectedIndex() > 1){
                 onText.setText("");
                 ocText.setText("");
                 osText.setText("");
@@ -618,7 +623,7 @@ public class Main extends JFrame{
                             scan.nextLine();
                         }
                                                 
-                        sampleSize = arrSize;
+                        sampleSize = arrSize-2;
                         
                         scan = new Scanner(file);
                         x = new double[arrSize];
@@ -730,11 +735,23 @@ public class Main extends JFrame{
                     
                     clusters = kmeans.getClusters(); 
                 }
-                else if(dropDown.getSelectedIndex() >= 3) {
-                    FuzzyKMeans fuzzyKmeans = new FuzzyKMeans(Integer.parseInt(kText.getText()), 
+                else if(dropDown.getSelectedIndex() == 3) {
+                    FuzzyCMeans fuzzyKmeans = new FuzzyCMeans(Integer.parseInt(kText.getText()), 
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = fuzzyKmeans.getClusters(); 
+                }
+                else if(dropDown.getSelectedIndex() == 4) {
+                    GustafsonKessel gkmeans = new GustafsonKessel(Integer.parseInt(kText.getText()), 
+                            Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
+                    
+                    clusters = gkmeans.getClusters(); 
+                }
+                else if(dropDown.getSelectedIndex() == 5) {
+                    GathGeva gmeans = new GathGeva(Integer.parseInt(kText.getText()), 
+                            Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
+                    
+                    clusters = gmeans.getClusters(); 
                 }
                 
                 int clustCount = 1;
@@ -1111,11 +1128,15 @@ public class Main extends JFrame{
                     if(dropDown.getSelectedIndex() == 0)
                         bw.write("Algorithm Used: Isodata\n\n");
                     else if(dropDown.getSelectedIndex() == 1)
-                        bw.write("Algorithm Used: K Means\n\n");    
+                        bw.write("Algorithm Used: Fuzzy Isodata\n\n");
                     else if(dropDown.getSelectedIndex() == 2)
-                        bw.write("Algorithm Used: Fuzzy K Means\n\n");
+                        bw.write("Algorithm Used: K Means\n\n");    
                     else if (dropDown.getSelectedIndex() == 3)
                         bw.write("Algorithm Used: Fuzzy C Means\n\n");
+                    else if (dropDown.getSelectedIndex() == 4)
+                        bw.write("Algorithm Used: Gustafson Kessel\n\n");
+                    else if (dropDown.getSelectedIndex() == 5)
+                        bw.write("Algorithm Used: Gath-Geva\n\n");
                     
                     if(paramCheck.isSelected()) {
                         String name = outFile.getName();
@@ -1132,7 +1153,7 @@ public class Main extends JFrame{
                                         + "\nInput Dimension: " + dimText.getText() 
                                             + "\nInput Sample Size: (" + sampleSize 
                                             + ", " + dimText.getText() + ")\n\n");
-                        if(dropDown.getSelectedIndex() >= 0 || dropDown.getSelectedIndex() < 2){
+                        if(dropDown.getSelectedIndex() == 0 || dropDown.getSelectedIndex() == 1){
                             bw.write("ON: " + onText.getText() + "\n");
                             bw.write("OC: " + ocText.getText() + "\n");
                             bw.write("OS: " + osText.getText() + "\n");
@@ -1141,9 +1162,9 @@ public class Main extends JFrame{
                             bw.write("I: " + iText.getText() + "\n");
                             bw.write("MIN: " + minText.getText() + "\n\n");
                         }
-                        else if(dropDown.getSelectedIndex() >= 2){
+                        else 
                             bw.write("K: " + kText.getText() + "\n\n");
-                        }
+                        
                     }
                     
                     if(clusterCheck.isSelected())
@@ -1156,17 +1177,18 @@ public class Main extends JFrame{
                         bw.write("--------------------------------------------------\n"
                                 + "Coordinates of Centers:\n" 
                                     + "--------------------------------------------------\n");
-                        
+                        int count = 1;
                         for (DataPoint point : means){
+                            bw.write("Cluster " + count + " Mean: \n");
                             switch (dimText.getText()) {
                                 case "2":
                                     bw.write(Double.toString((double)Math.round(point.getX() * 1000) / 1000) 
-                                            + ", " + Double.toString((double)Math.round(point.getY() * 1000) / 1000) + "\n");
+                                            + ", " + Double.toString((double)Math.round(point.getY() * 1000) / 1000) + "\n\n");
                                     break;
                                 case "3":
                                     bw.write(Double.toString((double)Math.round(point.getX() * 1000) / 1000)
                                             + ", " + Double.toString((double)Math.round(point.getY() * 1000) / 1000)
-                                            + ", " + Double.toString((double)Math.round(point.getZ() * 1000) / 1000) + "\n");
+                                            + ", " + Double.toString((double)Math.round(point.getZ() * 1000) / 1000) + "\n\n");
                                     break;
                                 default:
                                     String string;
@@ -1178,11 +1200,11 @@ public class Main extends JFrame{
                                     for(int i = 0; i < point.getExtraParams().length-3; i++)
                                         string += ", " + (double)Math.round(point.getExtraParams()[i] * 1000) / 1000;
                                     
-                                    bw.write(string + "\n");
+                                    bw.write(string + "\n\n");
                                     break;
                             }
+                        count++;
                         }
-                        bw.write("\n\n");
                     }
                     
                     if(groupCheck.isSelected()) {
@@ -1190,9 +1212,10 @@ public class Main extends JFrame{
                                 + "Cluster Groups:\n" 
                                     + "--------------------------------------------------\n");
                         
+                        int count = 1;
                         for(Cluster clust: clusters){ 
                             ArrayList<DataPoint> points = clust.getData();
-                            
+                            bw.write("Cluster " + count + ":\n");
                             for (DataPoint point : points){
                                 switch (dimText.getText()) {
                                     case "2":
@@ -1218,6 +1241,7 @@ public class Main extends JFrame{
                                 }
                             }
                             bw.write("\n\n");
+                            count++;
                         }
                         
                     }

@@ -7,6 +7,7 @@ public class DataPoint {
     private final double y;
     private final double z;
     public double[] extraParam;
+    private int clustNum;
     
     public DataPoint(){
         this.x = 0;
@@ -36,6 +37,14 @@ public class DataPoint {
     // returns z
     public double getZ() {
         return z;
+    }
+    
+    public int getClust(){
+        return clustNum;
+    }
+    
+    public void setClust(int num){
+        this.clustNum = num;
     }
     
     // returns the extra parameters in however many dimensions

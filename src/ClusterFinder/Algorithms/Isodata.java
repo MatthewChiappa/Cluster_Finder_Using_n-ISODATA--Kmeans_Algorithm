@@ -34,18 +34,14 @@ public class Isodata extends KMeans{
         this.minDist = min;
         
         boolean clustRemoved = false;
-        
-        System.out.println("Step 1+2");
-        
+               
         iterations = 1;
         while (iterations <= maxIt){
             
             Iterator<Cluster> iter = clusters.iterator();
             // step 3a
-            System.out.println("Step 3");
             while (iter.hasNext()) {
                 Cluster clust = iter.next();
-                System.out.println("clusters: " + clust.getData().size());
                 if(threshNum > clust.getData().size()){
                     iter.remove();
                     // make one less cluster
@@ -54,21 +50,18 @@ public class Isodata extends KMeans{
             }
             
             if (clustRemoved){
-                System.out.println("Step 3b");
                 // step 3b - assign points to clusters again w/ k - 1
                 KMeans newKMeans = new KMeans(clusters.size(), i, file, dim);
                 clusters = newKMeans.getClusters();
             }
             
             // step 4
-            System.out.println("Step 4");
             @SuppressWarnings("UnusedAssignment")
                 double[] coVar = new double[clusters.size()];
             findMean2();
             coVar = getCovariences(clusters.size());
             
             // step 5
-            System.out.println("Step 5");
             if(clusters.size() <= k/2 && canBeSplit()) 
                 // step 6
                 splitClusters(clusters.size(), coVar);
@@ -76,7 +69,6 @@ public class Isodata extends KMeans{
                 //step 7
                 mergeClusters(clusters.size());
 
-            System.out.println("Done with iter");
             clustRemoved = false;
             iterations++;
         }
@@ -104,13 +96,11 @@ public class Isodata extends KMeans{
         
         
         
-        System.out.println("Cov Done");
         return cov;
     
     }
 
     private void splitClusters(int k1, double[] cov) {
-        System.out.println("Step 6");
 
         double maxCov = Double.MIN_VALUE;
         int count = 0;
@@ -124,7 +114,6 @@ public class Isodata extends KMeans{
         
         if(maxCov/dim > deviationThresh && clust.getData().size()+10 > 2*threshNum){
             // split
-            System.out.println("Splitting");
             ClusterSplitter newClusts = new ClusterSplitter(clusters.get(count-1), dim);
             clusters.remove(count-1);
             clusters.addAll(newClusts.getClusters());
@@ -134,7 +123,6 @@ public class Isodata extends KMeans{
     }
 
     private void mergeClusters(int k) {
-        System.out.println("Step 7");
         
         Iterator<Cluster> iter = clusters.iterator();
         Iterator<Cluster> iter2 = clusters.iterator();
@@ -144,7 +132,6 @@ public class Isodata extends KMeans{
             while (iter.hasNext()) {
                 Cluster clust2 = iter.next();
                 if(clust.distanceFromCenter(clust2.getCentroid()) < threshDist){
-                    System.out.println("Merging");
                     ArrayList<Cluster> merge = new ArrayList<>();
                     merge.add(clust);
                     merge.add(clust2);
@@ -165,10 +152,10 @@ public class Isodata extends KMeans{
         
     }
     
-    public final void findMean2() {
-        for (Cluster cluster : clusters) {
-            cluster.setNewCentroid(); 
-        }
+    public void findMean2() {
+        clusters.stream().forEach((cluster) -> {
+            cluster.setNewCentroid();
+        });
     }
     
     public final boolean canBeSplit(){

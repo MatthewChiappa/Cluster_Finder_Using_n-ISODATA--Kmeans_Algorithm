@@ -14,7 +14,7 @@ public class KMeans {
     // global variables
     public int k;
     final int maxIt;
-    private final File file;
+    final File file;
     final int dim;
     
     // cluster list, orignal cluster list, and
@@ -36,23 +36,14 @@ public class KMeans {
         
         // k means algoritm is initilized
         initKMeans();
+        run();
+        
+    }
+    
+    private void run(){
         initClusters();
         findMean();
-        
-        // init allTrue to each if mean stays the same
-        boolean allTrue = allEqual();
-        
-        // k means algorithm is implemented until the max iterations
-        // is exceeded or the points in the cluster remain the same
-        while(!allTrue && iterations <= maxIt) {
-            for(int x = 0; x < k; x++)
-                    clusters.get(x).clearData();
-            iterations++;
-            initClusters();
-            findMean();
-            allTrue = allEqual();
-        }
-        
+        runAlg();
     }
     
     // returns the cluster list
@@ -191,6 +182,22 @@ public class KMeans {
     
     public int getNumClusters(){
         return k;
+    }
+
+    public void runAlg() {
+        // init allTrue to each if mean stays the same
+        boolean allTrue = allEqual();
+        
+        // k means algorithm is implemented until the max iterations
+        // is exceeded or the points in the cluster remain the same
+        while(!allTrue && iterations <= maxIt) {
+            for(int x = 0; x < k; x++)
+                    clusters.get(x).clearData();
+            iterations++;
+            initClusters();
+            findMean();
+            allTrue = allEqual();
+        }    
     }
     
 }
