@@ -9,6 +9,7 @@ public class Cluster {
     
     // center and data in the cluster, and number of dimensions
     public DataPoint point;
+    public DataPoint fuzzPt;
     public DataPoint oldPt;
     public DataPoint furPt;
     private final int dim;
@@ -133,9 +134,11 @@ public class Cluster {
         
         changes[0] = point.getX() - oldPt.getX();
         changes[1] = point.getY() - oldPt.getY();
-        changes[2] = point.getZ() - oldPt.getZ();
-        for(int i = 0; i < changes.length; i++)
-            changes[i] = point.getExtraParams()[i] - oldPt.getExtraParams()[i];
+        if(dim >= 3){
+            changes[2] = point.getZ() - oldPt.getZ();
+            for(int i = 0; i < changes.length; i++)
+                changes[i] = point.getExtraParams()[i] - oldPt.getExtraParams()[i];
+        }
         
         for(int i = 0; i < changes.length; i++)
             if(changes[i] > max)
@@ -212,7 +215,7 @@ public class Cluster {
                 center[i+3] = point.getExtraParams()[i];
             }
             
-            System.arraycopy(extra, 0, newPt, 3, newPt.length);
+            System.arraycopy(extra, 0, newPt, 3, extra.length);
         }
         
         double sum = 0, sumSqr;

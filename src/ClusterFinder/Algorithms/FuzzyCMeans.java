@@ -1,14 +1,12 @@
 package ClusterFinder.Algorithms;
 
-//import ClusterFinder.Algorithms.PlotObjects.DataPoint;
 import ClusterFinder.Algorithms.PlotObjects.Cluster;
 import java.io.File;
-//import java.util.ArrayList;
 
 public class FuzzyCMeans extends KMeans {
     
     final double fuzzyness = 0.9;
-    final double epsilon = 0.8;
+    final double epsilon = 0.001;
     
     // class extends k means algorithm then clusters are minipulated
     public FuzzyCMeans(int k, int maxIt, File file, int dim) {
@@ -21,8 +19,8 @@ public class FuzzyCMeans extends KMeans {
     public void runAlg() {
         double chg = Double.MAX_VALUE;
         
-        // k means algorithm is implemented until the max iterations
-        // is exceeded or the points in the cluster remain the same
+        // fuzzy c means algorithm is implemented until the max iterations
+        // is exceeded or the change in the cluster center is less than epsilon
         while(chg > epsilon && iterations <= maxIt) {
             for(int x = 0; x < k; x++)
                     clusters.get(x).clearData();

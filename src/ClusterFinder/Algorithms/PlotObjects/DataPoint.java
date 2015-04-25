@@ -58,6 +58,48 @@ public class DataPoint {
                 && z == newPoint.getZ();
     }
     
+    public double distanceToPoint(DataPoint point2) {
+        int SIZE = point2.getExtraParams().length;
+        double[] center = new double[SIZE+3];
+        
+        center[0] = this.getX();
+        center[1] = this.getY();
+        center[2] = this.getZ();
+        
+        double[] newPt = new double[SIZE+4];
+        
+        newPt[0] = point2.getX();
+        newPt[1] = point2.getY();
+        newPt[2] = point2.getZ();
+        
+        double[] extra = new double[SIZE];
+        
+        if(3+SIZE > 3) {
+            for(int i = 0; i < SIZE; i++) {
+                extra[i] = point2.getExtraParams()[i];
+                center[i+3] = this.getExtraParams()[i];
+            }
+            
+            System.arraycopy(extra, 0, newPt, 3, extra.length);
+        }
+        
+        double sum = 0, sumSqr;
+        
+        for (int i = 0 ; i < SIZE+3; i++){
+            if(Double.isNaN(newPt[i]))
+                newPt[i] = 0;
+            else if(Double.isNaN(center[i]))
+                center[i] = 0;
+        
+            
+            sumSqr = newPt[i] - center[i];
+            sumSqr = Math.pow(sumSqr, 2);
+            sum += sumSqr;
+        }
+        
+        return Math.sqrt(sum); 
+    }
+    
     // print method for debugging (only first 3 params)
     public String printPoint() {
         return (x + ", " + y + ", " + z);

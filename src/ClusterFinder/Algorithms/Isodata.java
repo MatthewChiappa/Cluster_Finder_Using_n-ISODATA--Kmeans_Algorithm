@@ -33,6 +33,15 @@ public class Isodata extends KMeans{
         this.extraParam = no;
         this.minDist = min;
         
+        runIso();
+        
+    }
+    
+    public final void runIso(){
+        runIsoAlg();
+    }
+    
+    public void runIsoAlg() {
         boolean clustRemoved = false;
                
         iterations = 1;
@@ -51,7 +60,7 @@ public class Isodata extends KMeans{
             
             if (clustRemoved){
                 // step 3b - assign points to clusters again w/ k - 1
-                KMeans newKMeans = new KMeans(clusters.size(), i, file, dim);
+                KMeans newKMeans = new KMeans(clusters.size(), maxIt, file, dim);
                 clusters = newKMeans.getClusters();
             }
             
@@ -72,7 +81,6 @@ public class Isodata extends KMeans{
             clustRemoved = false;
             iterations++;
         }
-        
     }
 
     final double[] getCovariences(int k1){
