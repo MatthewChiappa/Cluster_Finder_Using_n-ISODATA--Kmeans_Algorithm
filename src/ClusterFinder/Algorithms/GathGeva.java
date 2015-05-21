@@ -9,6 +9,10 @@ public class GathGeva extends KMeans {
         super(k, maxIt, file, dim);
     }
     
+    public GathGeva(GathGeva algorithm, File f) {  
+        super(algorithm, f);   
+    }
+    
     @Override
     public void initClusters(){
         orig.stream().forEach((point) -> {

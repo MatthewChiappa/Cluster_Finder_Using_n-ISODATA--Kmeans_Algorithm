@@ -8,6 +8,7 @@ import ClusterFinder.Algorithms.ClusterValidation.PartitionIndex;
 import ClusterFinder.Algorithms.ClusterValidation.SeparationIndex;
 import ClusterFinder.Algorithms.ClusterValidation.ValidationAlgorithm;
 import ClusterFinder.Algorithms.ClusterValidation.XieBeniIndex;
+import ClusterFinder.Algorithms.ClusteringAlgorithm;
 import ClusterFinder.Algorithms.FuzzyCMeans;
 import ClusterFinder.Algorithms.FuzzyIsodata;
 import ClusterFinder.Algorithms.GathGeva;
@@ -16,6 +17,8 @@ import ClusterFinder.Algorithms.Isodata;
 import ClusterFinder.Algorithms.KMeans;
 import ClusterFinder.Algorithms.PlotObjects.Cluster;
 import ClusterFinder.Algorithms.PlotObjects.DataPoint;
+import ClusterFinder.Algorithms.StabilityMeasures.AverageProportionNOverlap;
+import ClusterFinder.Algorithms.StabilityMeasures.StabilityAlgorithm;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -731,7 +734,7 @@ public class Main extends JFrame {
                 }
                 
                 if (dropDown.getSelectedIndex() == 0) {
-                    Isodata iso = new Isodata(Double.parseDouble(onText.getText()),
+                    ClusteringAlgorithm iso = new Isodata(Double.parseDouble(onText.getText()),
                             Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
                             Integer.parseInt(kText.getText()), Integer.parseInt(lText.getText()),
                             Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
@@ -739,7 +742,7 @@ public class Main extends JFrame {
                     
                     clusters = iso.getClusters();
                 } else if (dropDown.getSelectedIndex() == 1) {
-                    FuzzyIsodata iso = new FuzzyIsodata(Double.parseDouble(onText.getText()),
+                    ClusteringAlgorithm iso = new FuzzyIsodata(Double.parseDouble(onText.getText()),
                             Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
                             Integer.parseInt(kText.getText()), Integer.parseInt(lText.getText()),
                             Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
@@ -747,22 +750,22 @@ public class Main extends JFrame {
                     
                     clusters = iso.getClusters();
                 } else if (dropDown.getSelectedIndex() == 2) {
-                    KMeans kmeans = new KMeans(Integer.parseInt(kText.getText()),
+                    ClusteringAlgorithm kmeans = new KMeans(Integer.parseInt(kText.getText()),
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = kmeans.getClusters();                    
                 } else if (dropDown.getSelectedIndex() == 3) {
-                    FuzzyCMeans fuzzyKmeans = new FuzzyCMeans(Integer.parseInt(kText.getText()),
+                    ClusteringAlgorithm fuzzyKmeans = new FuzzyCMeans(Integer.parseInt(kText.getText()),
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = fuzzyKmeans.getClusters();                    
                 } else if (dropDown.getSelectedIndex() == 4) {
-                    GustafsonKessel gkmeans = new GustafsonKessel(Integer.parseInt(kText.getText()),
+                    ClusteringAlgorithm gkmeans = new GustafsonKessel(Integer.parseInt(kText.getText()),
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = gkmeans.getClusters();                    
                 } else if (dropDown.getSelectedIndex() == 5) {
-                    GathGeva gmeans = new GathGeva(Integer.parseInt(kText.getText()),
+                    ClusteringAlgorithm gmeans = new GathGeva(Integer.parseInt(kText.getText()),
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
                     
                     clusters = gmeans.getClusters();                    
@@ -898,6 +901,18 @@ public class Main extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(Main.this, "You must plot the graph before calculation.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+            
+            JOptionPane pane = new JOptionPane(
+                    "Would you like to show Stability Measures?");
+            Object[] options = new String[]{"No", "Yes"};
+            pane.setOptions(options);
+            JDialog dialog = pane.createDialog(this, "Stability Measures");
+            dialog.setVisible(true);
+            Object obj = pane.getValue();
+            if (options[1].equals(obj)) {
+                createStabilityGraphs();
+            }
+        
         });
 
         // read from the file to plot graph
@@ -1482,7 +1497,7 @@ public class Main extends JFrame {
         
         pack();
         setTitle("n-ISODATA/KMeans Clustering");
-        setLocationRelativeTo(null);
+        setLocation(100, 50);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(900, 565));
         setMinimumSize(new Dimension(900, 565));
@@ -1662,49 +1677,47 @@ public class Main extends JFrame {
         double[] altdunn = new double[5];
         ValidationAlgorithm coeff, clas, partInd, sepInd, xie, 
                 dunnsInd, altDunnInd;
+        
         ArrayList<Cluster> tempClust = null;
+        ClusteringAlgorithm alg = null;
         
         for (int i = 2; i < 7; i++) {
             switch (dropDown.getSelectedIndex()) {
                 case 0:
-                    Isodata iso = new Isodata(Double.parseDouble(onText.getText()),
+                    alg = new Isodata(Double.parseDouble(onText.getText()),
                             Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
                             i, Integer.parseInt(lText.getText()),
                             Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
                             Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
-                    tempClust = iso.getClusters();
                     break;
                 case 1:
-                    FuzzyIsodata iso2 = new FuzzyIsodata(Double.parseDouble(onText.getText()),
+                    alg = new FuzzyIsodata(Double.parseDouble(onText.getText()),
                             Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
                             i, Integer.parseInt(lText.getText()),
                             Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
                             Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
-                    tempClust = iso2.getClusters();
                     break;
                 case 2:
-                    KMeans kmeans = new KMeans(i, Integer.parseInt(iText.getText()),
+                    alg = new KMeans(i, Integer.parseInt(iText.getText()),
                             file, Integer.parseInt(dimText.getText()));
-                    tempClust = kmeans.getClusters();
                     break;
                 case 3:
-                    FuzzyCMeans cmeans = new FuzzyCMeans(i,
+                    alg = new FuzzyCMeans(i,
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
-                    tempClust = cmeans.getClusters();
                     break;
                 case 4:
-                    GustafsonKessel gust = new GustafsonKessel(i,
+                    alg = new GustafsonKessel(i,
                             Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
-                    tempClust = gust.getClusters();
                     break;
                 case 5:
-                    GathGeva gath = new GathGeva(i, Integer.parseInt(iText.getText()),
+                    alg = new GathGeva(i, Integer.parseInt(iText.getText()),
                             file, Integer.parseInt(dimText.getText()));
-                    tempClust = gath.getClusters();
                     break;
                 default:
                     break;
             }
+            if(alg != null)
+                tempClust = alg.getClusters();
             
             coeff = new PartitionCoefficent(tempClust);
             clas = new ClassificationEntropy(tempClust);
@@ -1730,7 +1743,7 @@ public class Main extends JFrame {
             if (Double.isNaN(partitions[k])) {
                 partitions[k] = 0;
             }
-            graphPoints1[k][1] = changeRange(partitions[k], 0, 0.35);
+            graphPoints1[k][1] = partitions[k];//changeRange(partitions[k], 0, 0.35);
             if (graphPoints1[k][1] > 1) {
                 graphPoints1[k][1] = 0.99999;
             }
@@ -1748,7 +1761,7 @@ public class Main extends JFrame {
             if (Double.isNaN(clasArr[k])) {
                 clasArr[k] = 0;
             }
-            graphPoints2[k][1] = changeRange(clasArr[k], 0, 0.4);
+            graphPoints2[k][1] = clasArr[k];//changeRange(clasArr[k], 0, 0.4);
         }
         
         graphs.add(graphPoints2);
@@ -1850,7 +1863,7 @@ public class Main extends JFrame {
                 panel1.add(plotVer1);
                 ver1.add(panel1);
                 ver1.setSize(450, 350);
-                ver1.setLocation(800, 500);
+                ver1.setLocation(600, 500);
                 ver1.setVisible(true);
             }
             else if (ver == 1) {
@@ -1859,9 +1872,9 @@ public class Main extends JFrame {
                 ver1.add(panel1);
                 ver2.add(panel2);
                 ver1.setSize(450, 350);
-                ver1.setLocation(300, 500);
+                ver1.setLocation(100, 500);
                 ver2.setSize(450, 350);
-                ver2.setLocation(800, 500);
+                ver2.setLocation(600, 500);
                 ver1.setVisible(true);
                 ver2.setVisible(true);
             }
@@ -1874,9 +1887,9 @@ public class Main extends JFrame {
                 ver1.add(panel1);
                 ver2.add(panel2);
                 ver1.setSize(450, 350);
-                ver1.setLocation(300, 500);
+                ver1.setLocation(100, 500);
                 ver2.setSize(450, 350);
-                ver2.setLocation(800, 500);
+                ver2.setLocation(600, 500);
                 ver1.setVisible(true);
                 ver2.setVisible(true);
             }
@@ -1884,7 +1897,7 @@ public class Main extends JFrame {
         
         GraphLegend legend = new GraphLegend();
         legend.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        legend.setLocation(1500, 600);
+        legend.setLocation(1120, 600);
         legend.setResizable(false);
         if(ind == 0)
             legend.setVisible(true);
@@ -1982,5 +1995,105 @@ public class Main extends JFrame {
         }
         return plot;
     }
-    
+
+    private void createStabilityGraphs() {
+        f = new JFrame("Loading");
+        JLabel label = new JLabel("Please Wait.");
+        JPanel panel = new JPanel();
+        panel.add(label);
+        f.add(panel);
+        f.repaint();
+        f.setSize(300, 100);
+        f.setResizable(false);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
+
+        Plot2DPanel plotVer1 = new Plot2DPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(400, 300);
+            }            
+        };
+        plotVer1.setAxisLabel(0, "    Clusters");
+        plotVer1.setAxisLabel(1, "    APN");
+        plotVer1.setFixedBounds(1, 0.0, 1.0);
+        
+        double[] apn = new double[5];
+        
+        @SuppressWarnings("UnusedAssignment")
+        StabilityAlgorithm apnMes = null;  
+        ClusteringAlgorithm alg = null;
+        
+        for (int i = 2; i < 7; i++) {
+            switch (dropDown.getSelectedIndex()) {
+                case 0:
+                    alg = new Isodata(Double.parseDouble(onText.getText()),
+                            Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
+                            i, Integer.parseInt(lText.getText()),
+                            Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
+                            Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
+                    break;
+                case 1:
+                    alg = new FuzzyIsodata(Double.parseDouble(onText.getText()),
+                            Double.parseDouble(ocText.getText()), Double.parseDouble(osText.getText()),
+                            i, Integer.parseInt(lText.getText()),
+                            Integer.parseInt(iText.getText()), Double.parseDouble(noText.getText()),
+                            Double.parseDouble(minText.getText()), file, Integer.parseInt(dimText.getText()));
+                    break;
+                case 2:
+                    alg = new KMeans(i, Integer.parseInt(iText.getText()),
+                            file, Integer.parseInt(dimText.getText()));
+                    break;
+                case 3:
+                    alg = new FuzzyCMeans(i,
+                            Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
+                    break;
+                case 4:
+                    alg = new GustafsonKessel(i,
+                            Integer.parseInt(iText.getText()), file, Integer.parseInt(dimText.getText()));
+                    break;
+                case 5:
+                    alg = new GathGeva(i, Integer.parseInt(iText.getText()),
+                            file, Integer.parseInt(dimText.getText()));
+                    break;
+                default:
+                    break;
+            }
+           
+            apnMes = new AverageProportionNOverlap(alg);
+            apn[i - 2] = apnMes.getResult();
+            
+        }
+        
+        double[][] graphPoints1 = new double[5][2];
+        for (int k = 0; k < 5; k++) {
+            graphPoints1[k][0] = k + 2;
+            graphPoints1[k][1] = changeRange(apn[k], 0, 0.35);
+            if (graphPoints1[k][1] > 1) {
+                graphPoints1[k][1] = 0.99999;
+            }
+            else if(Double.isNaN(graphPoints1[k][1]))
+                graphPoints1[k][1] = 0;
+        }
+        
+        graphs.add(graphPoints1);
+        plotVer1.addLinePlot("Average Proportion of Non-Overlap", Color.BLUE, graphPoints1);
+        plotVer1 = incThickness(plotVer1, graphPoints1, Color.BLUE);
+        
+        JFrame frame = new JFrame();
+        JPanel panel1 = new JPanel();
+        panel1.add(plotVer1);
+        frame.add(panel1);
+        frame.setSize(450, 350);
+        frame.setLocation(600, 100);
+        frame.setVisible(true);
+        
+        StabilityGraphLegend legend2 = new StabilityGraphLegend();
+        legend2.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        legend2.setLocation(1200, 100);
+        legend2.setResizable(false);
+        legend2.setVisible(true);
+        
+        f.setVisible(false);
+    }
 }

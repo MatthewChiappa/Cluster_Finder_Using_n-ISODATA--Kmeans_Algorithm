@@ -257,7 +257,7 @@ public class Cluster {
                 center[i+3] = point.getExtraParams()[i];
             }
             
-            System.arraycopy(extra, 0, newPt, 3, newPt.length);
+            System.arraycopy(extra, 0, newPt, 3, extra.length);
         }
         
         double[][] covM = new double[SIZE+3][SIZE+3];

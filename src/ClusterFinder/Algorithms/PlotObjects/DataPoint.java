@@ -58,6 +58,52 @@ public class DataPoint {
                 && z == newPoint.getZ();
     }
     
+    public boolean similarTo(DataPoint newPoint, int droppedNum) {
+        boolean similar;
+        
+        switch (droppedNum){
+            case 0:
+                if(y == newPoint.getY() && z == newPoint.getZ())
+                    for (int i  = 0; i < extraParam.length
+                            && i < newPoint.getExtraParams().length; i++)
+                        if (extraParam[i] != newPoint.getExtraParams()[i])
+                            return false;
+                else
+                    return false;        
+                break;
+            case 1:
+                if(x == newPoint.getX() && z == newPoint.getZ())
+                    for (int i  = 0; i < extraParam.length
+                            && i < newPoint.getExtraParams().length; i++)
+                        if (extraParam[i] != newPoint.getExtraParams()[i])
+                            return false;
+                else
+                    return false;
+                break;
+            case 2:
+                if(x == newPoint.getX() && y == newPoint.getY())
+                    for (int i  = 0; i < extraParam.length
+                            && i < newPoint.getExtraParams().length; i++)
+                        if (extraParam[i] != newPoint.getExtraParams()[i])
+                            return false;
+                else
+                    return false;
+                break;
+            default:
+                if(y == newPoint.getY() && z == newPoint.getZ())
+                    for (int i  = 0; i < extraParam.length
+                            && i < newPoint.getExtraParams().length; i++)
+                        if (extraParam[i] != newPoint.getExtraParams()[i])
+                            return false;
+                else
+                    return false;
+                break;
+        }
+        
+        similar = true;
+        return similar;
+    }
+    
     public double distanceToPoint(DataPoint point2) {
         int SIZE = point2.getExtraParams().length;
         double[] center = new double[SIZE+3];
@@ -102,7 +148,12 @@ public class DataPoint {
     
     // print method for debugging (only first 3 params)
     public String printPoint() {
-        return (x + ", " + y + ", " + z);
+        String extra = new String();
+        
+        for (int i = 0; i < extraParam.length; i++)
+            extra += extraParam[i] + "\t";
+        
+        return (x + "\t" + y + "\t" + z + "\t" + extra);
     }
     
 }

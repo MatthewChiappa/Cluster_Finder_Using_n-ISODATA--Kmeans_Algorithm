@@ -15,6 +15,10 @@ public class FuzzyCMeans extends KMeans {
         
     }
     
+    public FuzzyCMeans(FuzzyCMeans algorithm, File f) {  
+        super(algorithm, f);   
+    }
+    
     @Override
     public void runAlg() {
         double chg = Double.MAX_VALUE;

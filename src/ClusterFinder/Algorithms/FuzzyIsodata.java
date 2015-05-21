@@ -14,6 +14,11 @@ public class FuzzyIsodata extends Isodata {
         
     }
     
+    public FuzzyIsodata(FuzzyIsodata algorithm, File f){
+        super(algorithm, f);
+        findFinalMean();
+    }
+    
     @Override
     public void findMean2() {
         clusters.stream().forEach((clust) -> { 

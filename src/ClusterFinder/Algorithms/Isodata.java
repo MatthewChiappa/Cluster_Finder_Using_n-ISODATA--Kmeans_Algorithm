@@ -36,6 +36,18 @@ public class Isodata extends KMeans{
         runIso();
         
     }
+
+    public Isodata(Isodata algorithm, File f) {
+        super(algorithm,f);
+        this.threshNum = algorithm.threshNum;
+        this.threshDist = algorithm.threshDist;
+        this.deviationThresh = algorithm.deviationThresh;
+        this.maxClustMixed = algorithm.maxClustMixed;
+        this.extraParam = algorithm.extraParam;
+        this.minDist = algorithm.minDist;
+        
+        runIso();
+    }
     
     public final void runIso(){
         runIsoAlg();

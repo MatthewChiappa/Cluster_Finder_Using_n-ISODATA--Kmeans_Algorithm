@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class KMeans {
+public class KMeans implements ClusteringAlgorithm {
     
     // global variables
     public int k;
@@ -40,6 +40,20 @@ public class KMeans {
         
     }
     
+    public KMeans(KMeans algorithm, File f) {
+        this.k = algorithm.k;
+        this.maxIt = algorithm.maxIt;
+        this.file = f;
+        this.dim = algorithm.dim-1;
+        
+        clusters = new ArrayList<>();
+        orig = new ArrayList<>();
+        
+        // k means algoritm is initilized
+        initKMeans();
+        run();
+    }
+    
     private void run(){
         initClusters();
         findMean();
@@ -47,6 +61,7 @@ public class KMeans {
     }
     
     // returns the cluster list
+    @Override
     public ArrayList<Cluster> getClusters() {
         return clusters;
     }
@@ -198,6 +213,16 @@ public class KMeans {
             findMean();
             allTrue = allEqual();
         }    
+    }
+
+    @Override
+    public int getDim() {
+        return dim;
+    }
+
+    @Override
+    public File getFile() {
+        return file;
     }
     
 }
